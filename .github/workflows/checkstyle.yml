@@ -8,8 +8,6 @@ on:
 
 permissions:
   contents: read
-  checks: write
-  pull-requests: write
 
 jobs:
   checkstyle:
@@ -20,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -29,11 +27,9 @@ jobs:
       - name: Run Checkstyle
         run: mvn -B checkstyle:checkstyle --no-transfer-progress
 
-      - name: Annotate PR with Checkstyle results
-        uses: jwgmeligmeyling/checkstyle-github-action@v1
+      - name: Annotate with Checkstyle results
         if: always()
-        with:
-          path: '**/checkstyle-result.xml'
+        run: python3 .github/scripts/annotate_checkstyle.py target/checkstyle-result.xml
 
       - name: Upload Checkstyle report
         if: always()

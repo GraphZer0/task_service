@@ -8,8 +8,6 @@ on:
 
 permissions:
   contents: read
-  checks: write
-  pull-requests: write
 
 jobs:
   spotbugs:
@@ -20,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -32,11 +30,9 @@ jobs:
       - name: Run SpotBugs
         run: mvn -B spotbugs:spotbugs --no-transfer-progress
 
-      - name: Annotate PR with SpotBugs results
-        uses: jwgmeligmeyling/spotbugs-github-action@v1.2
+      - name: Annotate with SpotBugs results
         if: always()
-        with:
-          path: '**/spotbugsXml.xml'
+        run: python3 .github/scripts/annotate_spotbugs.py target/spotbugsXml.xml
 
       - name: Upload SpotBugs report
         if: always()
